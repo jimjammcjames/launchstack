@@ -32,6 +32,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Idempotency: skip already-processed events
+  const existing = await prisma.webhookEvent.findUnique({
+    where: { stripeEventId: event.id },
+  });
+  if (existing) {
+    return NextResponse.json({ received: true, deduplicated: true });
+  }
+
   try {
     switch (event.type) {
       case "checkout.session.completed": {
@@ -159,6 +167,11 @@ export async function POST(req: NextRequest) {
         break;
       }
     }
+
+    // Record event as processed
+    await prisma.webhookEvent.create({
+      data: { stripeEventId: event.id, type: event.type },
+    });
 
     return NextResponse.json({ received: true });
   } catch (error) {
