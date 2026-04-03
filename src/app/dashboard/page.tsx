@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth-helpers";
 
 interface StatCard {
   label: string;
@@ -7,6 +8,7 @@ interface StatCard {
   trend: "up" | "down";
 }
 
+// TODO: Replace these demo stats with real queries from your database
 const stats: StatCard[] = [
   { label: "Total Projects", value: "12", change: "+2 this month", trend: "up" },
   { label: "Active Users", value: "1,429", change: "+14.2%", trend: "up" },
@@ -14,6 +16,7 @@ const stats: StatCard[] = [
   { label: "Growth", value: "32%", change: "+4.5%", trend: "up" },
 ];
 
+// TODO: Replace with real activity from your database or event stream
 const recentActivity = [
   { id: 1, action: "New user signed up", detail: "sarah@example.com", time: "2 minutes ago" },
   { id: 2, action: "Payment received", detail: "$29.00 — Pro plan", time: "15 minutes ago" },
@@ -22,13 +25,16 @@ const recentActivity = [
   { id: 5, action: "New user signed up", detail: "mike@example.com", time: "5 hours ago" },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+  const firstName = user?.name?.split(" ")[0] || "there";
+
   return (
     <div className="space-y-8">
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
-          Welcome back, John 👋
+          Welcome back, {firstName} 👋
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Here&apos;s what&apos;s happening with your projects today.

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 
 interface NavItem {
@@ -66,7 +66,17 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const userName = session?.user?.name || "User";
+  const userEmail = session?.user?.email || "";
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
@@ -123,14 +133,14 @@ export default function DashboardLayout({
         <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
-              JD
+              {userInitials}
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
-                John Doe
+                {userName}
               </p>
               <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                john@example.com
+                {userEmail}
               </p>
             </div>
           </div>
@@ -161,7 +171,7 @@ export default function DashboardLayout({
               Sign Out
             </button>
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
-              JD
+              {userInitials}
             </div>
           </div>
         </header>
